@@ -30,27 +30,10 @@ jobs:
         username: aluno
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          # Iniciar SonarQube temporariamente
-          docker run -d --name sonarqube -p 9000:9000 sonarqube:latest
-          sleep 30  # Aguardar o SonarQube iniciar
-
-          # Executar análise do SonarQube
-          docker run --rm \
-            -e SONAR_HOST_URL="http://201.23.3.86:9000" \
-            -e SONAR_LOGIN=${{ secrets.SONAR_TOKEN }} \
-            -v "$(pwd):/usr/src" \
-            sonarsource/sonar-scanner-cli
-
-          # Remover container do SonarQube
-          docker stop sonarqube
-          docker rm sonarqube
-
-          # Deploy da aplicação
           docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/trabalho-volo:latest
           docker stop trabalho-volo || true
           docker rm trabalho-volo || true
           docker run -d \
             --name trabalho-volo \
-            -p 3000:3000 \
-            --network trabalho-volo-network \
+            -p 8182:8182 \
             ${{ secrets.DOCKER_HUB_USERNAME }}/trabalho-volo:latest 

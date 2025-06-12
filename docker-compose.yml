@@ -4,10 +4,10 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "8182:8182"
     environment:
       - DB_HOST=db
-      - DB_PORT=5433
+      - DB_PORT=5432
       - DB_USER=postgres
       - DB_PASSWORD=postgres
       - DB_NAME=trabalho_volo
@@ -17,7 +17,7 @@ services:
   db:
     image: postgres:14-alpine
     ports:
-      - "5433:5432"
+      - "8183:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
