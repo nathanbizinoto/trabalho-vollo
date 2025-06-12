@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Tarefas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .tarefa {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .tarefa.concluida {
+            background-color: #e8f5e9;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gerenciador de Tarefas</h1>
+    
+    <form id="tarefaForm">
+        <input type="text" id="titulo" placeholder="Título da tarefa" required>
+        <textarea id="descricao" placeholder="Descrição da tarefa"></textarea>
+        <button type="submit">Adicionar Tarefa</button>
+    </form>
+
+    <div id="tarefas"></div>
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+
+        async function carregarTarefas() {
+            const response = await fetch(`${API_URL}/tarefas`);
+            const tarefas = await response.json();
+            const tarefasDiv = document.getElementById('tarefas');
+            tarefasDiv.innerHTML = '';
+            
+            tarefas.forEach(tarefa => {
+                const tarefaElement = document.createElement('div');
+                tarefaElement.className = `tarefa ${tarefa.concluida ? 'concluida' : ''}`;
+                tarefaElement.innerHTML = `
+                    <h3>${tarefa.titulo}</h3>
+                    <p>${tarefa.descricao}</p>
+                    <button onclick="toggleConcluida(${tarefa.id}, ${!tarefa.concluida})">
+                        ${tarefa.concluida ? 'Desmarcar' : 'Concluir'}
+                    </button>
+                    <button onclick="excluirTarefa(${tarefa.id})">Excluir</button>
+                `;
+                tarefasDiv.appendChild(tarefaElement);
+            });
+        }
+
+        document.getElementById('tarefaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const titulo = document.getElementById('titulo').value;
+            const descricao = document.getElementById('descricao').value;
+
+            await fetch(`${API_URL}/tarefas`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ titulo, descricao })
+            });
+
+            document.getElementById('titulo').value = '';
+            document.getElementById('descricao').value = '';
+            carregarTarefas();
+        });
+
+        async function toggleConcluida(id, concluida) {
+            const tarefa = document.querySelector(`[onclick="toggleConcluida(${id}, ${!concluida})"]`)
+                .parentElement;
+            const titulo = tarefa.querySelector('h3').textContent;
+            const descricao = tarefa.querySelector('p').textContent;
+
+            await fetch(`${API_URL}/tarefas/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ titulo, descricao, concluida })
+            });
+
+            carregarTarefas();
+        }
+
+        async function excluirTarefa(id) {
+            await fetch(`${API_URL}/tarefas/${id}`, {
+                method: 'DELETE'
+            });
+            carregarTarefas();
+        }
+
+        carregarTarefas();
+    </script>
+</body>
+</html> 
