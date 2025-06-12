@@ -33,8 +33,23 @@ jobs:
           docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/trabalho-volo:latest
           docker stop trabalho-volo || true
           docker rm trabalho-volo || true
+          docker network create trabalho-network || true
+          docker run -d \
+            --name postgres-trabalho \
+            --network trabalho-network \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=postgres \
+            -e POSTGRES_DB=trabalho_volo \
+            postgres:14-alpine || true
+          sleep 10
           docker run -d \
             --name trabalho-volo \
+            --network trabalho-network \
             -p 8182:8182 \
             -e PORT=8182 \
+            -e DB_HOST=postgres-trabalho \
+            -e DB_PORT=5432 \
+            -e DB_USER=postgres \
+            -e DB_PASSWORD=postgres \
+            -e DB_NAME=trabalho_volo \
             ${{ secrets.DOCKER_HUB_USERNAME }}/trabalho-volo:latest 
