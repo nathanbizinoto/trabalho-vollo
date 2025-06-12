@@ -4,7 +4,7 @@ const { Pool } = require('pg');
 const path = require('path');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 8182;
 
 // Configuração do banco de dados
 const pool = new Pool({

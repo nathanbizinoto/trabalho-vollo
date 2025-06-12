@@ -35,5 +35,6 @@ jobs:
           docker rm trabalho-volo || true
           docker run -d \
             --name trabalho-volo \
-            -p 8182:3000 \
+            -p 8182:8182 \
+            -e PORT=8182 \
             ${{ secrets.DOCKER_HUB_USERNAME }}/trabalho-volo:latest 
