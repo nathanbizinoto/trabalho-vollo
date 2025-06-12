@@ -69,4 +69,6 @@ Configure os seguintes secrets no GitHub:
 - `DOCKER_HUB_USERNAME`: Seu usuário do Docker Hub
 - `DOCKER_HUB_TOKEN`: Seu token de acesso do Docker Hub
 - `SSH_PRIVATE_KEY`: Chave SSH para acesso ao servidor
-- `SONAR_TOKEN`: Token de acesso ao SonarQube 
+- `SONAR_TOKEN`: Token de acesso ao SonarQube
+
+   # Deploy test
